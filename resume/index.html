@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="蒋俊贤 - 暨南大学嵌入式实习生简历">
+  <title>蒋俊贤 · 嵌入式实习生</title>
+  <style>
+    :root {
+      --text: #1a1a1a;
+      --text-secondary: #666;
+      --accent: #2c5aa0;
+      --bg: #fff;
+      --divider: #e5e5e5;
+      --max-width: 720px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; font-size: 15px; line-height: 1.7; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Helvetica Neue", sans-serif;
+      color: var(--text); background: var(--bg); -webkit-font-smoothing: antialiased;
+    }
+
+    /* Sticky nav with backdrop blur, white bg */
+    nav { position: sticky; top: 0; background: rgba(255,255,255,0.95); backdrop-filter: blur(8px); border-bottom: 1px solid var(--divider); z-index: 100; padding: 0 20px; }
+    .nav-inner { max-width: var(--max-width); margin: 0 auto; display: flex; justify-content: space-between; align-items: center; height: 52px; }
+    .nav-title { font-weight: 600; font-size: 16px; letter-spacing: 0.5px; }
+    .nav-links { display: flex; gap: 24px; }
+    .nav-links a { text-decoration: none; color: var(--text-secondary); font-size: 14px; transition: color 0.2s; }
+    .nav-links a:hover { color: var(--accent); }
+
+    /* Main container */
+    main { max-width: var(--max-width); margin: 0 auto; padding: 0 20px; }
+
+    /* Hero */
+    #hero { padding: 80px 0 60px; text-align: center; }
+    #hero h1 { font-size: 32px; font-weight: 700; letter-spacing: 2px; margin-bottom: 12px; }
+    #hero .subtitle { font-size: 18px; color: var(--accent); font-weight: 500; margin-bottom: 8px; }
+    #hero .school { font-size: 14px; color: var(--text-secondary); }
+
+    /* Section titles */
+    section { padding: 40px 0; }
+    section h2 { font-size: 20px; font-weight: 600; margin-bottom: 24px; padding-bottom: 8px; border-bottom: 1px solid var(--divider); letter-spacing: 1px; }
+
+    /* Education card */
+    .edu-card { padding: 20px 24px; border-left: 3px solid var(--accent); background: #fafafa; border-radius: 0 6px 6px 0; }
+    .edu-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px; flex-wrap: wrap; gap: 8px; }
+    .edu-school { font-weight: 600; font-size: 16px; }
+    .edu-date { font-size: 13px; color: var(--text-secondary); }
+    .edu-major { color: var(--text-secondary); margin-bottom: 10px; }
+    .edu-courses { font-size: 14px; color: var(--text-secondary); line-height: 1.6; }
+
+    /* Skill tags */
+    .skill-group { margin-bottom: 18px; }
+    .skill-group h3 { font-size: 14px; font-weight: 500; color: var(--text-secondary); margin-bottom: 8px; }
+    .skill-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tag { display: inline-block; padding: 4px 14px; font-size: 13px; border: 1px solid var(--divider); border-radius: 20px; background: #fafafa; transition: border-color 0.2s, color 0.2s; }
+    .tag:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* Project cards */
+    .project-card { padding: 24px; border-left: 3px solid var(--accent); margin-bottom: 28px; background: #fafafa; border-radius: 0 6px 6px 0; }
+    .project-card h3 { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
+    .project-date { font-size: 13px; color: var(--text-secondary); margin-bottom: 12px; }
+    .project-card p { margin-bottom: 8px; line-height: 1.7; }
+    .project-card ul { margin-top: 8px; padding-left: 18px; }
+    .project-card li { margin-bottom: 6px; line-height: 1.6; font-size: 14px; }
+    .project-card li::marker { color: var(--accent); }
+
+    /* Contact */
+    .contact-list p { margin-bottom: 10px; font-size: 15px; }
+    .contact-list a { color: var(--accent); text-decoration: none; }
+    .contact-list a:hover { text-decoration: underline; }
+
+    /* Footer */
+    footer { text-align: center; padding: 40px 20px; color: var(--text-secondary); font-size: 13px; border-top: 1px solid var(--divider); margin-top: 20px; }
+
+    /* Responsive */
+    @media (max-width: 720px) {
+      #hero { padding: 48px 0 36px; }
+      #hero h1 { font-size: 26px; }
+      section { padding: 28px 0; }
+      section h2 { font-size: 18px; }
+      .nav-links { gap: 16px; }
+    }
+
+    /* Print */
+    @media print {
+      nav, footer { display: none; }
+      body { font-size: 12px; line-height: 1.5; }
+      .project-card, .edu-card { border-left: 2px solid #000; background: none; break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sticky Navigation -->
+  <nav>
+    <div class="nav-inner">
+      <div class="nav-title">蒋俊贤 · 简历</div>
+      <div class="nav-links">
+        <a href="#education">教育</a>
+        <a href="#skills">技能</a>
+        <a href="#projects">项目</a>
+        <a href="#contact">联系</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+
+    <!-- Hero Section -->
+    <section id="hero">
+      <h1>蒋俊贤</h1>
+      <div class="subtitle">嵌入式实习生</div>
+      <div class="school">暨南大学 · 光电信息科学与工程 · 2026 届本科</div>
+    </section>
+
+    <!-- 教育背景 -->
+    <section id="education">
+      <h2>教育背景</h2>
+      <div class="edu-card">
+        <div class="edu-header">
+          <span class="edu-school">暨南大学</span>
+          <span class="edu-date">2022.09 - 2026.06</span>
+        </div>
+        <div class="edu-major">光电信息科学与工程（本科）</div>
+        <div class="edu-courses">
+          主修课程：C 语言程序设计、电路分析、模拟电子技术、数字电子技术、单片机原理及应用、光电信息物理基础、嵌入式系统开发、光学设计、激光原理
+        </div>
+      </div>
+    </section>
+
+    <!-- 专业技能 -->
+    <section id="skills">
+      <h2>专业技能</h2>
+
+      <div class="skill-group">
+        <h3>光学仿真</h3>
+        <div class="skill-tags">
+          <span class="tag">Zemax</span>
+          <span class="tag">TracePro</span>
+          <span class="tag">LightTools</span>
+        </div>
+      </div>
+
+      <div class="skill-group">
+        <h3>电学设计与仿真</h3>
+        <div class="skill-tags">
+          <span class="tag">Proteus</span>
+          <span class="tag">嘉立创 EDA</span>
+          <span class="tag">PCB 设计</span>
+          <span class="tag">电路仿真</span>
+        </div>
+      </div>
+
+      <div class="skill-group">
+        <h3>嵌入式开发</h3>
+        <div class="skill-tags">
+          <span class="tag">C 语言</span>
+          <span class="tag">51 单片机</span>
+          <span class="tag">STM32</span>
+        </div>
+      </div>
+
+      <div class="skill-group">
+        <h3>编程与工具</h3>
+        <div class="skill-tags">
+          <span class="tag">Matlab</span>
+          <span class="tag">PyTorch</span>
+          <span class="tag">Trae</span>
+          <span class="tag">Cursor</span>
+        </div>
+      </div>
+
+      <div class="skill-group">
+        <h3>调试能力</h3>
+        <div class="skill-tags">
+          <span class="tag">Debugger</span>
+          <span class="tag">逻辑分析仪</span>
+          <span class="tag">示波器</span>
+          <span class="tag">万用表</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 项目经历 -->
+    <section id="projects">
+      <h2>项目经历</h2>
+
+      <!-- Project 1 -->
+      <div class="project-card">
+        <h3>基于 STM32 的流水灯控制系统</h3>
+        <div class="project-date">2025.03 - 2025.06</div>
+        <p>基于 STM32 系列单片机设计并实现了一套功能丰富的流水灯控制系统。采用 PWM 调光技术，精确控制灯光的亮度变化，实现平滑的流水灯视觉效果。</p>
+        <p>在 Proteus 进行仿真确定可行性后采用嘉立创进行 PCB 设计和下单，独立完成元器件的焊接并完成程序烧录。</p>
+        <ul>
+          <li>方向灵活切换：提供左移、右移、中间扩散、双向扫描等多种流动模式，并可随时切换运行方向。</li>
+          <li>PWM 调光控制：利用 STM32 内置定时器生成 PWM 信号，实现灯光亮度从 0% 到 100% 的无级调节，使流水灯过渡自然平滑。</li>
+        </ul>
+      </div>
+
+      <!-- Project 2 -->
+      <div class="project-card">
+        <h3>基于全卷积网络的人声提取技术研究</h3>
+        <div class="project-date">2026.01 - 2026.05</div>
+        <p>基于全卷积网络设计并实现了端到端人声提取系统，解决复杂噪声环境下的语音增强问题，可有效抑制非平稳噪声，支撑语音通信、智能交互等场景。</p>
+        <p>完成数据集预处理与方案可行性验证后，基于 Matlab 搭建主体网络模型，完成模型训练、调优与效果评估，独立完成项目的全流程工作。</p>
+        <ul>
+          <li>泛化能力优化：设计在线动态混合数据增强策略，将信噪比扩展为连续扰动分布，有效提升模型对未知噪声的泛化能力。</li>
+          <li>效果与稳定性优化：设计多分辨率 STFT 复合损失优化频谱保真度，配合梯度裁剪机制保障训练稳定，最终实现 SI-SNR 提升 10.87dB，PESQ 达 2.36。</li>
+        </ul>
+      </div>
+
+      <!-- Project 3 -->
+      <div class="project-card">
+        <h3>基于亚像素平移的图像超分辨率重建</h3>
+        <div class="project-date">2025.03 - 2026.06</div>
+        <p>基于亚像素平移设计并实现了图像超分辨率重建系统，可将低分辨率图像重建为高分辨率图像，解决成像模糊、分辨率不足的问题，支撑图像细节增强与后续处理。</p>
+        <p>完成数据集预处理与方案可行性验证后，基于 PyTorch 完成 FBAnet 模型的部署与调优，负责代码优化、训练稳定性改造与效果评估，参与完成项目的全流程工作。</p>
+        <ul>
+          <li>训练与效率优化：实现多进程+多线程两级并行架构，优化数据加载与路径管理，解决了训练时资源争用导致的系统崩溃问题，有效提升了处理效率。</li>
+          <li>效果优化：设计多维度损失函数与设备统一的评估方案，最终重建图像 PSNR 达 31.13dB、SSIM 达 0.899，有效提升了图像清晰度与细节保留能力。</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 联系方式 -->
+    <section id="contact">
+      <h2>联系方式</h2>
+      <div class="contact-list">
+        <p>邮箱：<a href="mailto:2898418183@qq.com">2898418183@qq.com</a></p>
+        <p>电话：13198502003</p>
+        <p>学校：暨南大学 · 光电信息科学与工程</p>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    &copy; 2026 蒋俊贤
+  </footer>
+
+</body>
+</html>
