@@ -1,0 +1,8 @@
+{
+  "active_partition": "A",
+  "partitions": {
+    "A": {"version": "1.0.0", "status": "ok"},
+    "B": {"version": "0.0.0", "status": "empty"}
+  },
+  "upgrade_history": []
+}

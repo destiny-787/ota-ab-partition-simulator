@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OTA A/B 分区升级模拟器</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#0d1117;color:#c9d1d9;min-height:100vh}
+.header{background:#161b22;border-bottom:1px solid #30363d;padding:16px 24px;display:flex;justify-content:space-between;align-items:center}
+.header h1{font-size:18px;color:#58a6ff}
+.status-bar{display:flex;gap:20px;font-size:13px}
+.status-item{display:flex;align-items:center;gap:6px}
+.dot{width:8px;height:8px;border-radius:50%}
+.dot.ok{background:#3fb950}
+.dot.failed{background:#f85149}
+.dot.empty{background:#484f58}
+.main{display:flex;height:calc(100vh - 65px)}
+.sidebar{width:280px;background:#161b22;border-right:1px solid #30363d;padding:16px;display:flex;flex-direction:column;gap:10px}
+.sidebar button{width:100%;padding:10px;border:1px solid #30363d;border-radius:6px;background:#21262d;color:#c9d1d9;cursor:pointer;font-size:13px;text-align:left;transition:all 0.2s}
+.sidebar button:hover{background:#30363d;border-color:#58a6ff}
+.sidebar button.primary{background:#238636;border-color:#238636;color:#fff}
+.sidebar button.danger{background:#da3633;border-color:#da3633;color:#fff}
+.sidebar select{width:100%;padding:8px;background:#21262d;border:1px solid #30363d;border-radius:6px;color:#c9d1d9;font-size:13px}
+.content{flex:1;padding:24px;display:flex;gap:24px;flex-wrap:wrap;align-content:flex-start}
+.partition-card{flex:1;min-width:200px;max-width:320px;background:#161b22;border:1px solid #30363d;border-radius:8px;padding:20px}
+.partition-card.active{border-color:#58a6ff;box-shadow:0 0 12px rgba(88,166,255,0.15)}
+.partition-card h3{font-size:16px;margin-bottom:12px;color:#58a6ff}
+.partition-card .ver{font-size:28px;font-weight:bold;margin:8px 0}
+.log-panel{width:100%;min-width:400px;background:#0d1117;border:1px solid #30363d;border-radius:8px;padding:16px;max-height:400px;overflow-y:auto}
+.log-panel h3{font-size:14px;color:#8b949e;margin-bottom:8px}
+.log-entry{font-family:'Cascadia Code',monospace;font-size:12px;padding:3px 0;border-bottom:1px solid #161b22}
+.log-entry.info{color:#8b949e}
+.log-entry.success{color:#3fb950}
+.log-entry.error{color:#f85149}
+.log-entry.warn{color:#d29922}
+.progress-bar{width:100%;height:6px;background:#21262d;border-radius:3px;margin-top:8px;overflow:hidden}
+.progress-fill{height:100%;background:#58a6ff;transition:width 0.3s;width:0%}
+.failure-toggle{display:flex;align-items:center;gap:8px;font-size:12px;color:#8b949e;margin-top:6px}
+.failure-toggle input{margin:0}
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>OTA A/B 分区升级模拟器</h1>
+  <div class="status-bar" id="statusBar"></div>
+</div>
+<div class="main">
+  <div class="sidebar">
+    <select id="fwSelect"><option value="">-- 选择固件版本 --</option></select>
+    <button onclick="apiCall('POST','/api/download',{version:document.getElementById('fwSelect').value},'下载中...')">下载到非激活分区</button>
+    <button onclick="apiCall('POST','/api/verify',null,'校验中...')">校验固件</button>
+    <button class="primary" onclick="doUpgrade(false)">执行升级</button>
+    <div class="failure-toggle"><input type="checkbox" id="simFail"><label for="simFail">模拟写入失败 (自动回滚)</label></div>
+    <button class="danger" onclick="doUpgrade(true)">执行升级 (模拟失败)</button>
+    <hr style="border-color:#30363d;margin:8px 0">
+    <button onclick="apiCall('POST','/api/rollback',null,'回滚中...')">手动回滚</button>
+    <button onclick="refreshState()" style="margin-top:auto">刷新状态</button>
+  </div>
+  <div class="content" id="mainContent"></div>
+</div>
+<script>
+const API = '';
+let ws = null;
+
+function connectWS() {
+  const proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
+  ws = new WebSocket(`${proto}//${location.host}/ws/progress`);
+  ws.onmessage = (e) => {
+    const msg = JSON.parse(e.data);
+    if (msg.event === 'progress') {
+      const bar = document.getElementById('progFill');
+      if (bar) bar.style.width = msg.percent + '%';
+      addLog(msg.stage + (msg.percent !== undefined ? ` ${msg.percent}%` : ''), 'info');
+    } else if (msg.event === 'failed') {
+      addLog('UPGRADE FAILED - auto rollback triggered', 'error');
+    } else if (msg.event === 'complete') {
+      addLog('UPGRADE COMPLETE', 'success');
+    }
+  };
+}
+connectWS();
+
+function addLog(text, cls) {
+  const lp = document.getElementById('logPanel');
+  if (!lp) return;
+  const div = document.createElement('div');
+  div.className = 'log-entry ' + (cls || 'info');
+  div.textContent = new Date().toLocaleTimeString() + ' ' + text;
+  lp.prepend(div);
+  if (lp.children.length > 50) lp.removeChild(lp.lastChild);
+}
+
+async function apiCall(method, path, body, loading) {
+  addLog(loading || (method + ' ' + path), 'info');
+  const opts = { method, headers: { 'Content-Type': 'application/json' } };
+  if (body) opts.body = JSON.stringify(body);
+  try {
+    const r = await fetch(API + path, opts);
+    const data = await r.json();
+    if (data.success) {
+      addLog('OK: ' + data.message, 'success');
+    } else {
+      addLog('FAIL: ' + (data.message || data.detail || r.statusText), 'error');
+    }
+    refreshState();
+  } catch (err) {
+    addLog('ERROR: ' + err.message, 'error');
+  }
+}
+
+async function doUpgrade(fail) {
+  const ver = document.getElementById('fwSelect').value;
+  if (!ver) { addLog('Please select a firmware version', 'warn'); return; }
+  apiCall('POST', '/api/upgrade', { version: ver, simulate_failure: fail }, 'Upgrading...');
+}
+
+async function refreshState() {
+  try {
+    const r = await fetch(API + '/api/version');
+    const data = await r.json();
+    if (!data.success) return;
+    const d = data.data;
+    document.getElementById('statusBar').innerHTML =
+      `<div class="status-item">Active: <b>${d.active_partition}</b></div>
+       <div class="status-item"><span class="dot ${d.partitions[d.active_partition].status}"></span> ${d.partitions[d.active_partition].version}</div>`;
+
+    let html = '';
+    for (const [name, info] of Object.entries(d.partitions)) {
+      const active = name === d.active_partition ? ' active' : '';
+      const sc = info.status === 'ok' ? '#3fb950' : info.status === 'failed' ? '#f85149' : '#484f58';
+      html += `<div class="partition-card${active}">
+        <h3>分区 ${name} ${active ? '◀ 当前' : ''}</h3>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span class="dot ${info.status}" style="width:12px;height:12px"></span>
+          <span style="color:#8b949e">${info.status}</span>
+        </div>
+        <div class="ver">v${info.version}</div>
+      </div>`;
+    }
+    html += `<div class="log-panel" id="logPanel"><h3>操作日志</h3>
+      <div id="progBar" class="progress-bar"><div id="progFill" class="progress-fill"></div></div>
+    </div>`;
+    document.getElementById('mainContent').innerHTML = html;
+  } catch (err) {
+    console.error(err);
+  }
+
+  // Refresh firmware list
+  try {
+    const r = await fetch(API + '/api/firmware');
+    const data = await r.json();
+    const sel = document.getElementById('fwSelect');
+    sel.innerHTML = '<option value="">-- 选择固件版本 --</option>';
+    if (data.data && data.data.firmware) {
+      data.data.firmware.forEach(fw => {
+        sel.innerHTML += `<option value="${fw.version}">${fw.version} (${fw.size_kb} KB)</option>`;
+      });
+    }
+  } catch (err) {}
+}
+
+refreshState();
+setInterval(refreshState, 5000);
+</script>
+</body>
+</html>

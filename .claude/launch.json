@@ -1,0 +1,12 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "ota-web",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-m", "uvicorn", "server.main:app", "--host", "127.0.0.1", "--port", "8001"],
+      "port": 8001,
+      "cwd": "ota-simulator"
+    }
+  ]
+}
