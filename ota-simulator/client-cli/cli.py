@@ -17,6 +17,7 @@ from rich.progress import Progress, SpinnerColumn, TextColumn
 from rich.live import Live
 from rich.layout import Layout
 
+sys.stdout.reconfigure(encoding="utf-8")
 console = Console()
 BASE_URL = "http://localhost:8000"
 
@@ -43,7 +44,7 @@ def cmd_check():
     table.add_column("Active", style="bold")
 
     for name, info in d["partitions"].items():
-        marker = "◀── ACTIVE" if name == active else ""
+        marker = "[ACTIVE]" if name == active else ""
         status_color = "green" if info["status"] == "ok" else "red" if info["status"] == "failed" else "dim"
         table.add_row(
             f"Partition {name}",

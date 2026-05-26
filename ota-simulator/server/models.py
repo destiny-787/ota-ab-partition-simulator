@@ -26,7 +26,7 @@ class DeviceState(BaseModel):
 class FirmwareListItem(BaseModel):
     version: str
     path: str
-    size_kb: int
+    size_kb: float
 
 
 class DownloadRequest(BaseModel):
